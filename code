@@ -1,4 +1,21 @@
 Swift 5
-外觀
+
+外觀：
+
+直接叫出調色盤
 元件.backgroundColor = color literal
-效用：直接叫出調色盤
+
+Label
+根據文字內容自動計算大小
+//方法
+func textSize(text : String , font : UIFont , maxSize : CGSize) -> CGSize{
+        return text.boundingRect(with: maxSize, options: [.usesLineFragmentOrigin], attributes: [NSFontAttributeName : font], context: nil).size
+    }
+//先設定好文字大小
+let textFont = UIFont.systemFont(ofSize: 14)
+//要計算的文字內容
+let textString = "兒子中考考試考差了，被老婆罵了一頓。"
+//設定最大寬度
+let textMaxSize = CGSize(width: 240, height: CGFloat(MAXFLOAT))
+//用上述三個變數，呼叫textSize方法，獲得計算後的寬度和高度。
+let textLabelSize = self.textSize(text:textString , font: self.textFont, maxSize: textMaxSize)
