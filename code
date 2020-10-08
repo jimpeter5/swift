@@ -5,7 +5,8 @@ Swift 5
 直接叫出調色盤
 元件.backgroundColor = color literal
 
-Label
+Label：
+
 根據文字內容自動計算大小
 //方法
 func textSize(text : String , font : UIFont , maxSize : CGSize) -> CGSize{
@@ -19,3 +20,59 @@ let textString = "兒子中考考試考差了，被老婆罵了一頓。"
 let textMaxSize = CGSize(width: 240, height: CGFloat(MAXFLOAT))
 //用上述三個變數，呼叫textSize方法，獲得計算後的寬度和高度。
 let textLabelSize = self.textSize(text:textString , font: self.textFont, maxSize: textMaxSize)
+
+Web Api：
+
+叫用Web Api會導致執行緒錯開的問題，因此若叫用Web Api後要跟新UI介面，需使用下述方法
+DispatchQueue.main.async {
+        //Update the UI
+    }
+
+Get方法
+//建立任務，可以重複使用
+let session = URLSession(configuration: .default)
+//設置URL
+let url = "http://127.0.0.1/api/"
+var UrlRequest = URLRequest(url: URL(string: url)!)
+//建立網路任務
+let task = session.dataTask(with: UrlRequest) {(data, response, error) in
+    do {
+        //返回json，把返回的json轉成字典r
+        let r = try JSONSerialization.jsonObject(with: data!, options: []) as! NSDictionary
+        print(r)
+    } catch {
+        //連接失敗
+        print("無法連接到伺服器")
+        return
+    }
+}
+// 執行任務(該方法可以中途暫停或在執行等等)
+task.resume()
+
+Post方法
+//建立任務，可以重複使用。
+let session = URLSession(configuration: .default)
+//設置URL
+let url = "http://127.0.0.1/api/"
+var request = URLRequest(url: URL(string: url)!)
+request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+request.httpMethod = "POST"
+//設置要post的内容，字典格式
+let postData = ["email":"user@xxx.com","password":"123456"]
+let postString = postData.compactMap({ (key, value) -> String in
+    return "\(key)=\(value)"
+}).joined(separator: "&")
+request.httpBody = postString.data(using: .utf8)
+//建立網路任務
+let task = session.dataTask(with: request) {(data, response, error) in
+    do {
+        //返回json，把返回的json轉成字典r
+        let r = try JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableContainers) as! NSDictionary
+        print(r)
+    } catch {
+        //連接失敗
+        print("無法連接到伺服器")
+        return
+    }
+}
+task.resume()
